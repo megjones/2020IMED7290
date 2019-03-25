@@ -1,0 +1,71 @@
+---
+title: "IMED 7280 reshape demo"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(reshape2)
+```
+
+This document pretty much has code only, so you can add your own notes to each section once you see what it does
+
+NOTE: "gather" and "spread"  in tidyverse have similar BUT NOT IDENTICAL functions to melt and dcast - pick the one you want and play with it to get to know it better. 
+
+
+```{r airquality}
+summary(airquality)
+
+```
+
+Try the melt function
+
+```{r}
+
+airq.melt<- melt(airquality)
+head(airq.melt)
+summary(airq.melt)
+
+```
+
+Let's see what assigning ID variables does
+
+```{r}
+airq.melt2<- melt(airquality, id="Month")
+head(airq.melt2)
+
+```
+
+What about multiple ID variables?
+
+```{r}
+airq.melt3<- melt(airquality, id=c("Month", "Day"))
+head(airq.melt3)
+
+
+```
+
+dcast - the opposite of melt
+
+```{r}
+
+airq.cast<- dcast(airq.melt)
+
+```
+
+Need to add a formula LHS~RHS
+
+```{r}
+head(airq.melt)
+airq.cast<- dcast(airq.melt, ~variable)
+```
+
+Why doesn't this work? hint: are there individual identifiers in this data??
+
+```{r}
+airq.melt4<- melt(cbind(id=rownames(airquality), airquality))
+airq.cast<- dcast(airq.melt4, id~variable)
+
+```
+
+Homework: Try melting and recasting this in different forms. In what cases would you want the data in those forms??
