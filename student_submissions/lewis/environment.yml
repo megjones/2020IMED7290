@@ -1,0 +1,13 @@
+name: dataviz                          # Our env was made with --prefix
+channels:
+  - conda-forge 
+
+dependencies:
+  - pandas
+  - jupyter
+  - rpy2
+  - r-essentials
+  - holoviews
+  - bokeh 
+  - seaborn
+  - python=3.7
