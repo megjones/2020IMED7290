@@ -12,3 +12,7 @@ Open jupyter notebook
 ```bash
     jupyter notebook
 ```
+ 
+[link to notebook](dataviz%20tutorial%20histogram%20-%20lewis.ipynb)
+
+[link to saved notebook output (html)](dataviz tutorial histogram - lewis.html)
