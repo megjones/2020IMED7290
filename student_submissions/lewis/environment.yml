@@ -9,5 +9,7 @@ dependencies:
   - r-essentials
   - holoviews
   - bokeh 
+  - selenium # bokeh export svg dependency
   - seaborn
   - python=3.7
+  
