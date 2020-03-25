@@ -13,6 +13,7 @@ Open jupyter notebook
     jupyter notebook
 ```
 
-[link to notebook](dataviz%20tutorial%20histogram%20-%20lewis.ipynb)
+[link to saved html output](docs/index.html) (right click, download to desktop then open)
 
-[link to saved notebook output](docs/index.html)
+
+
