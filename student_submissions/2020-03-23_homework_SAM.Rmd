@@ -1,0 +1,125 @@
+---
+title: "homework"
+author: "Samantha Lee"
+date: "23/03/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Histogram
+
+1.	Make a histogram of p values for CD4T cells
+2.	Change default parameters to increase clarity
+3.	Overlap histograms of p values for CD4T and Monocytes, and modify them to be clearer
+4.	Repeat step 3 but use density plot instead, and modify as needed to make it clear
+5.	ADVANCED: Make both an overlap of all the cell type density plots as well as a faceted version with one distribution per facet and decide which is best
+
+Load data.  
+```{r load_data}
+load("~/Desktop/2019IMED7290-master/IMED7280_2019_datavis_example.rdata")
+load("~/Desktop/2019IMED7290-master/IMED7280_2019_datavis_data.rdata")
+```
+
+Load libraries.  
+```{r libraries}
+library(tidyverse)
+```
+
+Make histogram of p-vals for CD4T cells
+```{r pval_histo_cd4t}
+#subset only cd4t data
+ggplot(cord_adult_ct_sub %>% select(CD4T_P), aes(x=CD4T_P)) +
+  geom_histogram(stat = "bin")
+```
+
+Make histogram of p-vals for CD4T cells for clear.
+```{r pval_histo_cd4t_CLEAR}
+#subset only cd4t data
+#-log10 p vals to get better visualization
+#change bin width to allow for refinement
+#add in significance line
+ggplot(cord_adult_ct_sub %>% select(CD4T_P), aes(x=-log10(CD4T_P))) +
+  geom_histogram(stat = "bin", binwidth = 0.1) + 
+  geom_vline(xintercept = -log10(0.05), linetype = "dashed") +
+  theme_bw()
+```
+
+Overlap histograms of p values for CD4T and Monocytes, and modify them to be clearer
+```{r overlap_histo}
+#grab data
+data <- cord_adult_ct_sub %>% select(CD4T_P,Mono_P)
+data$cpg <- rownames(data)
+
+#melt data to be in long format
+data.melt <- reshape2::melt(data, id.vars="cpg", 
+                            measure.vars=c("CD4T_P","Mono_P"),
+                            variable.name="CellType",
+                            value.name="Pval")
+
+#now plot
+ggplot(data.melt, aes(x=-log10(Pval), group=CellType, fill=CellType)) +
+  geom_histogram(binwidth=0.1, alpha=0.5) +
+  scale_fill_manual(values=c("turquoise","firebrick"),
+                    labels=c("CD4T", "Monocytes")) +
+  geom_vline(xintercept = -log10(0.05), linetype = "dashed") +
+  theme_bw() +
+  #i think the border is ugly so i removed it
+  theme(panel.border = element_blank()) +
+  theme(legend.position = c(0.8, 0.8), legend.background = element_blank())
+```
+
+Repeat step 3 but use density plot instead, and modify as needed to make it clear
+```{r overlap_density}
+#density plot
+ggplot(data.melt, aes(x=-log10(Pval), group=CellType, fill=CellType)) +
+  geom_density(alpha=0.5) +
+  scale_fill_manual(values=c("turquoise","firebrick"),
+                    labels=c("CD4T", "Monocytes")) +
+  geom_vline(xintercept = -log10(0.05), linetype = "dashed") +
+  theme_bw() +
+  #i think the border is ugly so i removed it
+  theme(panel.border = element_blank()) +
+  theme(legend.position = c(0.8, 0.8), legend.background = element_blank())
+```
+
+ADVANCED: Make both an overlap of all the cell type density plots as well as a faceted version with one distribution per facet and decide which is best
+```{r density_ALL}
+#get just data for pvals
+pvals <- cord_adult_ct_sub[,1:6]
+#add it rownames for id
+pvals$cpg <- rownames(pvals)
+  
+#change pvals to loooonnnggg format  
+data.melt.all <- reshape2::melt(pvals, id.vars="cpg",
+                            variable.name="CellType",
+                            value.name="Pval")
+
+ggplot(data.melt.all, aes(x=-log10(Pval), group=CellType, 
+                          fill=CellType, col=CellType)) +
+  geom_density(alpha=0.1) +
+  scale_fill_brewer(palette = "Accent") +
+  scale_color_brewer(palette = "Accent") +
+  geom_vline(xintercept = -log10(0.05), linetype = "dashed") +
+  theme_bw() +
+  #i think the border is ugly so i removed it
+  theme(panel.border = element_blank()) +
+  theme(legend.position = c(0.8, 0.8), legend.background = element_blank())
+```
+
+```{r facet}
+ggplot(data.melt.all, aes(x=-log10(Pval), group=CellType, 
+                          fill=CellType, col=CellType)) +
+  geom_density() +
+  scale_fill_brewer(palette = "Accent") +
+  scale_color_brewer(palette = "Accent") +
+  geom_vline(xintercept = -log10(0.05), linetype = "dashed") +
+  theme_bw() +
+  #i think the border is ugly so i removed it
+  theme(panel.border = element_blank()) +
+  #theme(legend.position = c(0.8, 0.8), legend.background = element_blank()) +
+  facet_wrap( ~ CellType, nrow=2) +
+  theme(legend.position = "none")
+```
